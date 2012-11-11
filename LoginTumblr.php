@@ -25,6 +25,7 @@ if (array_key_exists("login", $_GET)) {
 <link href="http://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Molengo" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="../backend/css/style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="css/table.css" type="text/css" media="screen">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="js/strlen.js"></script>
 <script src="js/jquery.jqEasyCharCounter.min.js" type="text/javascript"></script>
@@ -79,6 +80,10 @@ if (array_key_exists("login", $_GET)) {
 			margin: 0 0 7px 0;
 			padding: 0;
 		}
+
+#prop{
+	margin: 5px;
+}
 </style>
 </head><link rel="stylesheet" type="text/css" href="data:text/css,">
 <body>
@@ -102,41 +107,45 @@ if (array_key_exists("login", $_GET)) {
 				$success = $client->CallAPI(
 					'http://api.tumblr.com/v2/user/info', 
 					'GET', array(), array('FailOnAccessError'=>true), $user);
-				
-				#Send Post
-				$post_type  = 'text';
-				$post_title = 'Title Post By Tumblr API';
-				$post_body  = 'Body Post By Tumblr API';
-
-				// $success = $client->CallAPI(
-					// 'http://api.tumblr.com/v2/blog/mtasuandi.tumblr.com/post',
-					// 'POST', array('type' => $post_type, 'title' => $post_title,'body' => $post_body), array('FailOnAccessError'=>true), $post);
 			}
 		}
 		$success 	= $client->Finalize($success);
-		//$users		= $client->Finalize($users);
 	}
 	if($client->exit)
 		exit;
 ?>
 	<?php
-	if($success){ ?>
+	if($success){ 
+		$tumblr_name 		= $user->response->user->name;
+		$tumblr_url			= $user->response->user->blogs[0]->url;
+		$tumblr_title		= $user->response->user->blogs[0]->title;
+		$tumblr_following	= $user->response->user->following;
+		$tumblr_followers	= $user->response->user->blogs[0]->followers;
+		$tumblr_description	= $user->response->user->blogs[0]->description;
+	?>
+	
 	<div class="buttons">
-		Tumblr Account: <? echo $user->response->user->name; ?>
+		<table border="0" cellpadding="0" cellspacing="0" class="vertical">
+		<th colspan="2">Login Profile</th>
+		<tr><td><img src="icon/tumblr.png"></img></td><td><? echo '<a href="http://'.$tumblr_name.'.tumblr.com" target="_blank">'.$tumblr_name.'</a>'; ?></td></tr>
+		<? if(isset($_SESSION['twitter_otoken'])){
+		echo '<tr><td><img src="icon/twitter.png"></img></td><td><a href="http://twitter.com/'.$_SESSION['twitter_username'].'" target="_blank">'.$_SESSION['twitter_username'].'</a></td></tr>';
+		}
+		?>
+		</table>
 	</div>
-	<div class="buttons">
+	
+	
 		<?php
-		if(isset($_SESSION['twitter_otoken'])){
-			//echo 'Twitter Token: '.$_SESSION['twitter_otoken'].'<br/>';
-			//echo 'Twitter Token Secret: '.$_SESSION['twitter_otoken_secret'].'<br/>';
-			echo 'Twitter Account: '.$_SESSION['twitter_username'].'<br/>';
-		}else{
+		if(!isset($_SESSION['twitter_otoken'])){
 			?>
-			<a href="?login&oauth_provider=twitter" class="button"><span class="icon icon197"></span><span class="label">Login To Twitter</span></a>
+			<div class="buttons">
+			<a href="?login&oauth_provider=twitter" class="button"><span class="icon icon197"></span><span class="label">Connect To Twitter</span></a>
+			</div>
 			<?php
 		}
 		?>
-	</div>
+	
 	<script>
 		function setbg(color)
 		{
@@ -153,21 +162,24 @@ if (array_key_exists("login", $_GET)) {
 	<?php
 	$user_token 	= $_SESSION['twitter_access_token']['oauth_token'];
 	$user_secret 	= $_SESSION['twitter_access_token']['oauth_token_secret'];
-
-	?>	
+	
+	if(isset($_SESSION['twitter_username'])){
+	?>
 	<div class="buttons">
 		<form action="post.php" method="POST" enctype="multipart/form-data">
-		<textarea id="tweet" name="tweet" cols="50" rows="5" onfocus="setbg('#e5fff3');" onblur="setbg('white')"></textarea><br/>
 		<div id="prop">
+		<textarea id="tweet" name="tweet" cols="50" rows="5" onfocus="setbg('#white');" onblur="setbg('white')"></textarea>
 		<input type="file" name="image" /><p/>
 		<input type="hidden" name="user_token" id="user_token" value="<? echo $user_token; ?>"/>
-		<input type="hidden" name="user_secret" id="user_secret" value="<? echo $user_secret; ?>"/><br/>
-		<input id="submit" type="submit" value="Post to Twitter and Tumblr" onClick="javascript:checkValue();"/>
+		<input type="hidden" name="user_secret" id="user_secret" value="<? echo $user_secret; ?>"/>
+		<input type="checkbox" name="posttotumblr" id="posttotumblr" value="PostToTumblr"/>&nbsp;Post To Tumblr<p/>
+		<button class="action blue" id="login" name="login" onClick="checkValue();"><span class="label">Send</span></button>
 		</div>
 		</form>
 	</div>
 	
-	<?php 
+	<?php
+	}
 	}	
 	?>
 </div>
