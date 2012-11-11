@@ -72,9 +72,15 @@ if (array_key_exists("login", $_GET)) {
 <body>
 <div id="container">
 	<div class="buttons">
-		<h2>TweeTumb</h2>
+		<h2>TweeTumbr</h2>
 	</div>
 		
+	<div class="buttons">
+		<span style="color:green;"><strong>TweeTumbr</strong></span>, aplikasi ini untuk memudahkan pengguna tumblr yang memiliki akun twitter. Pengguna aplikasi ini dapat melakukan update postingan di akun Tumblr hanya melalui tweet yang dikirim lewat twitter.
+	</div>
+	<div class="buttons">
+		<span style="color:red;">Note: Saya tidak menyimpan (kedalam database) akses token dari pengguna Aplikasi ini.</span>
+	</div>
 	<div class="buttons">
 		<a href="?login&oauth_provider=tumblr" class="button"><span class="icon icon197"></span><span class="label">Login To Tumblr</span></a>
 	</div>
